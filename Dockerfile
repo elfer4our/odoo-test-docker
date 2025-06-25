@@ -15,7 +15,7 @@ WORKDIR /opt/odoo
 RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git .
 
 # Add custom addons to /mnt/custom_addons
-COPY ./custom_addons /mnt/custom_addons
+
 
 # Install Python requirements
 COPY requirements.txt .

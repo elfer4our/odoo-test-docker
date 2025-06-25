@@ -46,7 +46,7 @@ jobs:
               --db_password=odoo \
               --test-enable \
               --stop-after-init \
-              --addons-path=/mnt/odoo/addons,/mnt/custom_addons
+              --addons-path=/mnt/odoo/addons
 
       - name: Upload Logs on Failure
         if: failure()
