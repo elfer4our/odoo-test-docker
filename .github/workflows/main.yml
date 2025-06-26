@@ -1,3 +1,10 @@
+name: Odoo CI/CD - Like Odoo.sh
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,3 +32,4 @@ jobs:
             odoo:16.0 \
             odoo --db_host=host.docker.internal --db_user=odoo --db_password=odoo \
               --test-enable --stop-after-init --addons-path=/mnt/odoo/addons,/mnt/custom_addons
+
