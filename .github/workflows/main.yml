@@ -1,13 +1,5 @@
-name: Odoo CI/CD - Like Odoo.sh
-
-on:
-  push:
-    branches: [main, staging]
-  pull_request:
-
 jobs:
   test:
-    name: 🧪 Test Odoo Addons
     runs-on: ubuntu-latest
 
     services:
@@ -19,41 +11,17 @@ jobs:
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Build Docker Image
-        run: docker build --progress=plain -t odoo-test -f Dockerfile .
-
-      - name: Debug - Check odoo-bin existence & permissions
-        run: |
-          docker run --rm odoo-test ls -l /opt/odoo/odoo-bin || echo "❌ odoo-bin not found"
-          docker run --rm odoo-test file /opt/odoo/odoo-bin || echo "❌ file command failed"
-          docker run --rm odoo-test python3 /opt/odoo/odoo-bin --version || echo "❌ Failed to run odoo-bin"
-
-      - name: Run Odoo Tests in Container
+      - name: Run Odoo Tests with official image
         run: |
           docker run --rm \
             -e DB_HOST=host.docker.internal \
             -e DB_PORT=5432 \
             -e DB_USER=odoo \
             -e DB_PASSWORD=odoo \
-            odoo-test \
-            odoo-bin -d test_db \
-              --db_host=host.docker.internal \
-              --db_user=odoo \
-              --db_password=odoo \
-              --test-enable \
-              --stop-after-init \
-              --addons-path=/mnt/odoo/addons,/mnt/custom_addons
-
-      - name: Upload Logs on Failure
-        if: failure()
-        run: echo "❌ Tests failed. See logs above like in Odoo.sh."
+            odoo:16.0 \
+            odoo --db_host=host.docker.internal --db_user=odoo --db_password=odoo \
+              --test-enable --stop-after-init --addons-path=/mnt/odoo/addons,/mnt/custom_addons
