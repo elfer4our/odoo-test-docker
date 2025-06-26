@@ -25,12 +25,30 @@ jobs:
           --health-retries=5
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Run Odoo Tests in Docker
+      - name: Wait for PostgreSQL to be healthy
+        run: |
+          for i in {1..10}; do
+            if pg_isready -h localhost -p 5432 -U odoo; then
+              echo "Postgres is ready!"
+              break
+            fi
+            echo "Waiting for postgres..."
+            sleep 5
+          done
+
+      - name: Detect GitHub Docker network
+        id: detect-network
+        run: |
+          NETWORK_NAME=$(docker network ls --filter name=github --format "{{.Name}}" | head -n 1)
+          echo "network=$NETWORK_NAME" >> $GITHUB_OUTPUT
+
+      - name: Run Odoo tests in Docker
         run: |
           docker run --rm \
-            --add-host=host.docker.internal:host-gateway \
+            --network=${{ steps.detect-network.outputs.network }} \
             -v ${{ github.workspace }}/custom_addons:/mnt/custom_addons \
             odoo:16.0 \
             odoo --db_host=postgres \
@@ -39,5 +57,3 @@ jobs:
                  --db_password=odoo \
                  --test-enable --stop-after-init \
                  --addons-path=/mnt/odoo/addons,/mnt/custom_addons
-
-
