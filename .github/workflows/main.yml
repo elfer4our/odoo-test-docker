@@ -56,4 +56,4 @@ jobs:
                  --db_user=odoo \
                  --db_password=odoo \
                  --test-enable --stop-after-init \
-                 --addons-path=/mnt/odoo/addons,/mnt/custom_addons
+
