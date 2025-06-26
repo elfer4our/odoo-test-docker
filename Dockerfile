@@ -12,7 +12,7 @@ RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 WORKDIR /opt/odoo
 
 # Clone Odoo source
-RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git .
+RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git
 
 # Add custom addons to /mnt/custom_addons
 
