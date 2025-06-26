@@ -18,18 +18,26 @@ jobs:
           POSTGRES_DB: test_db
         ports:
           - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U odoo"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Odoo Tests with official image
+      - name: Run Odoo Tests in Docker
         run: |
           docker run --rm \
-            -e DB_HOST=localhost \
-            -e DB_PORT=5432 \
-            -e DB_USER=odoo \
-            -e DB_PASSWORD=odoo \
+            --add-host=host.docker.internal:host-gateway \
+            -v ${{ github.workspace }}/custom_addons:/mnt/custom_addons \
             odoo:16.0 \
-            odoo --db_host=localhost --db_user=odoo --db_password=odoo \
-              --test-enable --stop-after-init --addons-path=/mnt/odoo/addons,/mnt/custom_addons
+            odoo --db_host=postgres \
+                 --db_port=5432 \
+                 --db_user=odoo \
+                 --db_password=odoo \
+                 --test-enable --stop-after-init \
+                 --addons-path=/mnt/odoo/addons,/mnt/custom_addons
+
 
