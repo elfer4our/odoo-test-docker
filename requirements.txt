@@ -6,3 +6,4 @@ werkzeug
 PyPDF2
 py3o.template
 py3o.formats
+urllib3
