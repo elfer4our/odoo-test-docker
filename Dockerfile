@@ -10,7 +10,9 @@ RUN apt-get update && apt-get install -y \
 RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 
 # Clone Odoo source directly into /opt/odoo
-RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git /opt/odoo
+RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git
+
+COPY ./odoo /opt/odoo
 
 # Set workdir
 WORKDIR /opt/odoo
