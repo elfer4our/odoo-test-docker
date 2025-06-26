@@ -30,7 +30,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build Docker Image
-        run: docker build -t odoo-test -f Dockerfile .
+        run: docker build --progress=plain -t odoo-test -f Dockerfile .
+
+      - name: Debug - Check odoo-bin existence & permissions
+        run: |
+          docker run --rm odoo-test ls -l /opt/odoo/odoo-bin || echo "❌ odoo-bin not found"
+          docker run --rm odoo-test file /opt/odoo/odoo-bin || echo "❌ file command failed"
+          docker run --rm odoo-test python3 /opt/odoo/odoo-bin --version || echo "❌ Failed to run odoo-bin"
 
       - name: Run Odoo Tests in Container
         run: |
@@ -46,7 +52,7 @@ jobs:
               --db_password=odoo \
               --test-enable \
               --stop-after-init \
-              --addons-path=/mnt/odoo/addons
+              --addons-path=/mnt/odoo/addons,/mnt/custom_addons
 
       - name: Upload Logs on Failure
         if: failure()
