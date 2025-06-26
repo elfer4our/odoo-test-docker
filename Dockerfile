@@ -6,20 +6,20 @@ RUN apt-get update && apt-get install -y \
     libsasl2-dev libldap2-dev node-less npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Create user
+# Create odoo user
 RUN useradd -m -d /opt/odoo -U -r -s /bin/bash odoo
 
+# Clone Odoo source directly into /opt/odoo
+RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git /opt/odoo
+
+# Set workdir
 WORKDIR /opt/odoo
-
-# Clone Odoo source
-RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git
-
-# Add custom addons to /mnt/custom_addons
-
 
 # Install Python requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python3", "/opt/odoo/odoo-bin"]
+# Switch to odoo user (optional, good for security)
+USER odoo
 
+CMD ["python3", "/opt/odoo/odoo-bin"]
