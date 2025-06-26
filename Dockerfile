@@ -21,4 +21,5 @@ RUN git clone --depth 1 --branch 16.0 https://github.com/odoo/odoo.git
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["odoo-bin"]
+CMD ["python3", "/opt/odoo/odoo-bin"]
+
